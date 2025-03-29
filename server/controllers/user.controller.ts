@@ -1,14 +1,15 @@
-import { asyncHandler } from "../utils/asynchandler.js";
-import { User } from "../models/user.model.js";
-import { ApiError } from "../utils/apiError.js";
+import { asyncHandler } from "../utils/asynchandler.ts";
+import { User } from "../models/user.model.ts";
+import { ApiError } from "../utils/apiError.ts";
 import jwt from "jsonwebtoken";
-import { ApiResponse } from "../utils/ApiResponse.js";
-import passport from "passport";
-import GoogleStrategy from "passport-google-oauth20";
+import { ApiResponse } from "../utils/ApiResponse.ts";
 
-const generateAccessAndRefereshTokens = async(userId) =>{
+const generateAccessAndRefereshTokens = async(userId:string) =>{
     try {
         const user = await User.findById(userId)
+        if(!user) {
+            throw new ApiError(404, "User not found")
+        }
         const accessToken = user.generateAccessToken()
         const refreshToken = user.generateRefreshToken()
 
@@ -72,8 +73,8 @@ const loginUser = asyncHandler(async (req, res) =>{
 
     const user = await User.findOne({ email });
 
-    if (!user) {
-        registerUser(req, res);
+    if(!user) {
+        throw new ApiError(404, "User not found")
     }
 
    const isPasswordValid = await user.isPasswordCorrect(password)
@@ -135,16 +136,16 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
             secure: true
         }
     
-        const {accessToken, newRefreshToken} = await generateAccessAndRefereshTokens(user._id)
+        const {accessToken, refreshToken} = await generateAccessAndRefereshTokens(user._id)
     
         return res
         .status(200)
         .cookie("accessToken", accessToken, options)
-        .cookie("refreshToken", newRefreshToken, options)
+        .cookie("refreshToken", refreshToken, options)
         .json(
             new ApiResponse(
                 200, 
-                {accessToken, refreshToken: newRefreshToken},
+                {accessToken, refreshToken: refreshToken},
                 "Access token refreshed"
             )
         )

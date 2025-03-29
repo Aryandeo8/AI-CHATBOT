@@ -5,8 +5,8 @@ import {
   refreshAccessToken,
   getCurrentUser,
   googleCallback
-} from '../controllers/user.controller.js';
-import { verifyJWT } from '../middleware/auth.middleware.js';
+} from '../controllers/user.controller.ts';
+import { verifyJWT } from '../middleware/auth.middleware.ts';
 import passport from 'passport';
 
 const userRouter = Router();

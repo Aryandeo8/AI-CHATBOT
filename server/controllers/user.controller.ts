@@ -8,7 +8,7 @@ const generateAccessAndRefereshTokens = async(userId:string) =>{
     try {
         const user = await User.findById(userId)
         if(!user) {
-            throw new ApiError(404, "User not found")
+            throw new ApiError(404,"User not found")
         }
         const accessToken = user.generateAccessToken()
         const refreshToken = user.generateRefreshToken()
@@ -20,7 +20,7 @@ const generateAccessAndRefereshTokens = async(userId:string) =>{
 
 
     } catch (error) {
-        throw new ApiError(500, "Something went wrong while generating referesh and access token")
+        throw new ApiError(500,"Something went wrong while generating referesh and access token")
     }
 };
 const registerUser = asyncHandler( async (req, res) => {
@@ -31,13 +31,13 @@ const registerUser = asyncHandler( async (req, res) => {
     if (
         [email,password].some((field) => field?.trim() === "")
     ) {
-        throw new ApiError(400, "All fields are required")
+        throw new ApiError(400,"All fields are required" )
     }
 
     const existedUser = await User.findOne({ email });
 
     if (existedUser) {
-        throw new ApiError(409, "User with email already exists")
+        throw new ApiError(409,"User with email already exists")
     }
     //console.log(req.files);
 

@@ -2,7 +2,7 @@ import mongoose,{Schema} from "mongoose";
 import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
 import { Document } from "mongoose";
-
+import { randomUUID } from "crypto";
 
 
 export interface IUser extends Document {
@@ -10,13 +10,30 @@ export interface IUser extends Document {
     email: string;
     password: string;
     refreshToken?: string;
-  
+    chats: {
+        id: string;
+        role: string;
+        content: string;
+    }[];
     // Instance methods
     isPasswordCorrect(password: string): Promise<boolean>;
     generateAccessToken(): string;
     generateRefreshToken(): string;
 }
-
+const chatSchema = new mongoose.Schema({
+    id: {
+      type: String,
+      default: randomUUID(),
+    },
+    role: {
+      type: String,
+      required: true,
+    },
+    content: {
+      type: String,
+      required: true,
+    },
+});
 const userSchema = new Schema<IUser>({
     email: {
         type: String,
@@ -29,7 +46,8 @@ const userSchema = new Schema<IUser>({
     },
     refreshToken: {
         type: String
-    }
+    },
+    chats: [chatSchema],
 },
 {
     timestamps: true
